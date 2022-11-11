@@ -49,7 +49,7 @@ use crate::slab_versioned::{Key, VersionedSlab};
 use crate::text::Text;
 use crate::username::Username;
 use crate::util::{chunks_in_view_distance, is_chunk_in_view_distance};
-use crate::world::{WorldId, Worlds};
+use crate::world::{World, WorldId, Worlds};
 use crate::{ident, LIBRARY_NAMESPACE};
 
 /// Contains the [`ClientEvent`] enum and related data types.
@@ -401,8 +401,10 @@ impl<C: Config> Client<C> {
         self.bits.set_spawn(true);
     }
 
-    pub fn respawn(&mut self, dimension_type_name: Ident<String>, dimension_name: Ident<String>) {
+    pub fn respawn<T: Config>(&mut self, world: &World<T>) {
         let last_death_location: Option<(Ident<String>, BlockPos)> = None;
+        let dimension_type_name = world.meta.dimension().dimension_type_name();
+        let dimension_name = world.meta.dimension().dimension_name();
         if let Some((death_dimension_id, death_pos)) = self.death_location() {}
         self.queue_packet(&Respawn {
             dimension_type_name,
