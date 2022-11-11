@@ -401,6 +401,22 @@ impl<C: Config> Client<C> {
         self.bits.set_spawn(true);
     }
 
+    pub fn respawn(&mut self, dimension_type_name: Ident<String>, dimension_name: Ident<String>) {
+        let last_death_location: Option<(Ident<String>, BlockPos)> = None;
+        if let Some((death_dimension_id, death_pos)) = self.death_location() {}
+        self.queue_packet(&Respawn {
+            dimension_type_name,
+            dimension_name,
+            hashed_seed: 10,
+            game_mode: self.new_game_mode,
+            previous_game_mode: self.old_game_mode,
+            is_debug: false,
+            is_flat: self.bits.flat(),
+            copy_metadata: true,
+            last_death_location,
+        });
+    }
+
     /// Sends a system message to the player which is visible in the chat. The
     /// message is only visible to this client.
     pub fn send_message(&mut self, msg: impl Into<Text>) {
